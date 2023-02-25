@@ -20,7 +20,8 @@ a {
 }
 
 .connect-btn {
-    background-color: #008CBA; /* Blue */
+    background-color: #008CBA;
+    /* Blue */
     border: none;
     color: white;
     padding: 10px 20px;
@@ -32,6 +33,40 @@ a {
     cursor: pointer;
     font-size: 1.3rem;
 }
-.btn{
+
+.btn {
     margin-bottom: 2rem;
+}
+
+
+
+/* Style the text inside the prompt window */
+.prompt-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Style the input field inside the prompt window */
+.prompt-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+}
+
+/* Style the "OK" and "Cancel" buttons inside the prompt window */
+.prompt-button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.prompt-button:hover {
+    cursor: pointer;
+    background-color: #0056b3;
 }

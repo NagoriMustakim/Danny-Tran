@@ -40,29 +40,37 @@
                 alert("Please install Metamask to connect to the Polygon network.");
                 return;
             }
-            const connect_btn = document.getElementById('connect_btn')
-            if (isloading) {
-                connect_btn.innerText = "Connecting..."
-                isloading = false;
+            try {
+
+                const connect_btn = document.getElementById('connect_btn')
+                if (isloading) {
+                    connect_btn.innerText = "Connecting..."
+                    isloading = false;
+                }
+                // Request permission to access the user's Metamask account
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const accounts = await provider.send('eth_requestAccounts', []);
+                console.log(accounts[0]);
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                console.log(chainId);
+                if (chainId !== '0x13881') {
+                    //alert('Incorrect network! Switch your metamask network to polygon');
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x13881' }],
+                    })
+                }
+                balance = await provider.getBalance(accounts[0]);
+                balance = ethers.utils.formatEther(balance)
+                console.log(balance, 'MATIC');
+                connect_btn.innerText = "Connected"
+            } catch (error) {
+                alert(error)
+                connect_btn.innerText = "MetaMask"
+
             }
 
-            // Request permission to access the user's Metamask account
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const accounts = await provider.send('eth_requestAccounts', []);
-            console.log(accounts[0]);
-            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-            console.log(chainId);
-            if (chainId !== '0x13881') {
-                //alert('Incorrect network! Switch your metamask network to polygon');
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x13881' }],
-                })
-            }
-            balance = await provider.getBalance(accounts[0]);
-            balance = ethers.utils.formatEther(balance)
-            console.log(balance, 'MATIC');
-            connect_btn.innerText = "Connected"
+
 
         }
         async function checkMaticAndRedirect1() {
@@ -70,7 +78,7 @@
             if (balance == undefined) {
                 alert("Connect wallet First")
             }
-            if (balance == 0.0) {
+            else if (balance == 0.0) {
                 let ans = prompt("You don't have enough balance, if you want to buy MATIC press yes")
                 if (ans.toLocaleLowerCase() == "yes") {
                     window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
