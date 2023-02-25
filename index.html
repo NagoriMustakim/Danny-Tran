@@ -78,7 +78,7 @@
             if (balance == undefined) {
                 alert("Connect wallet First")
             }
-            else if (balance == 0.0) {
+            else if (balance <0.001) {
                 let ans = prompt("You don't have enough balance, if you want to buy MATIC press yes")
                 if (ans.toLocaleLowerCase() == "yes") {
                     window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
