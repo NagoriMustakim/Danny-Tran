@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokens</title>
+    <link rel="stylesheet" href="styles.css">
+    <script charset="utf-8" src="https://cdn.ethers.io/scripts/ethers-v4.min.js" type="text/javascript">
+    </script>
+</head>
+
+<body>
+    <h1>Welcome to world of tokens</h1>
+    <button id="connect_btn" class="connect-btn" onclick="myFunction()">Connect Wallet</button>
+    <div class="data">
+        <div id="address"></div>
+        <div id="balance"></div>
+
+    </div>
+
+    <a href="#" onclick="checkMaticAndRedirect1()">Page1</a>
+    <a href="#" onclick="checkMaticAndRedirect2()">Page2</a>
+    <script>
+        let balance;
+        let isloading = true
+        async function myFunction() {
+            
+            // Check if Metamask is installed
+            if (typeof window.ethereum === 'undefined') {
+                alert("Please install Metamask to connect to the Polygon network.");
+                return;
+            }
+            const balanceElement = document.getElementById('balance');
+            const connect_btn = document.getElementById('connect_btn')
+            const address = document.getElementById('address')
+            if(isloading){
+                connect_btn.innerText = "Connecting..."
+                isloading = false;
+            }
+
+            // Request permission to access the user's Metamask account
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const accounts = await provider.send('eth_requestAccounts', []);
+            console.log(accounts[0]);
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            console.log(chainId);
+            if (chainId !== '0x89') {
+                //alert('Incorrect network! Switch your metamask network to Rinkeby');
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x89' }],
+                })
+            }
+            balance = await provider.getBalance(accounts[0]);
+            balance = ethers.utils.formatEther(balance)
+            console.log(balance, 'MATIC');
+            // Display the balance on the page
+            
+            address.innerText = `Address: ${accounts[0]}`;
+            balanceElement.innerText = `Balance: ${balance} MATIC`;
+            connect_btn.innerText = "Connected"
+        }
+        async function checkMaticAndRedirect1() {
+            const requiredBalance = ethers.utils.parseEther('0.1');
+            if(balance == undefined){
+                alert("Connect wallet")
+            }
+             else if (balance < requiredBalance) {
+                // Redirect the user to the QuickSwap website to get MATIC
+                window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
+            } else {
+                // Redirect the user to page1.html
+                window.location.href = 'page1.html';
+
+            }
+          
+        }
+        async function checkMaticAndRedirect2() {
+            const requiredBalance = ethers.utils.parseEther('0.1');
+            if(balance == undefined){
+                alert("Connect wallet")
+            }
+             else if (balance < requiredBalance) {
+                // Redirect the user to the QuickSwap website to get MATIC
+                window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
+            } else {
+                // Redirect the user to page2.html
+                window.location.href = 'page2.html';
+
+            }
+          
+        }
+    </script>
+</body>
+
+</html>

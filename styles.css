@@ -1,0 +1,24 @@
+.connect-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: #008CBA;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+a{
+    text-decoration: none;
+    margin: 2rem;
+    font-size: 1.5rem;
+}
+.data{
+    color:rgb(38, 0, 255);
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+}
