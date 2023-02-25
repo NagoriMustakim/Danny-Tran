@@ -5,37 +5,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokens</title>
+    <title>DungToken</title>
     <link rel="stylesheet" href="styles.css">
-    <script charset="utf-8" src="https://cdn.ethers.io/scripts/ethers-v4.min.js" type="text/javascript">
-    </script>
+    <script charset="utf-8" src="https://cdn.ethers.io/scripts/ethers-v4.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+
+
 </head>
 
 <body>
     <h1>Welcome to world of tokens</h1>
-    <!-- <button id="connect_btn" class="connect-btn" onclick="myFunction()">Connect Wallet</button> -->
-    <button class="connect-btn" onclick="openModal()">Connect Wallet</button>
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <p>Connect with:</p>
-            <button id="connect_btn" class="metamask-btn" onclick="connectMetamask()">Metamask</button>
-            <button class="walletconnect-btn" onclick="connectWalletConnect()">WalletConnect</button>
-        </div>
+    <div class="btn">
+
+        <button id="connect_btn" class="connect-btn" onclick="myFunction()">MetaMask</button>
+        <button id="connect_btn" class="connect-btn" onclick="connectWC()">Wallet Connect</button>
     </div>
 
 
-    <div class="data">
-        <div id="address"></div>
-        <div id="balance"></div>
-
-    </div>
 
     <a href="#" onclick="checkMaticAndRedirect1()">Page1</a>
     <a href="#" onclick="checkMaticAndRedirect2()">Page2</a>
-    <script>
+
+
+    <!-- /# script part -->
+    <script type="text/javascript">
         let balance;
         let isloading = true
         async function myFunction() {
@@ -45,9 +40,7 @@
                 alert("Please install Metamask to connect to the Polygon network.");
                 return;
             }
-            const balanceElement = document.getElementById('balance');
             const connect_btn = document.getElementById('connect_btn')
-            const address = document.getElementById('address')
             if (isloading) {
                 connect_btn.innerText = "Connecting..."
                 isloading = false;
@@ -59,34 +52,35 @@
             console.log(accounts[0]);
             const chainId = await window.ethereum.request({ method: 'eth_chainId' });
             console.log(chainId);
-            if (chainId !== '0x89') {
+            if (chainId !== '0x13881') {
                 //alert('Incorrect network! Switch your metamask network to polygon');
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x89' }],
+                    params: [{ chainId: '0x13881' }],
                 })
             }
             balance = await provider.getBalance(accounts[0]);
             balance = ethers.utils.formatEther(balance)
             console.log(balance, 'MATIC');
-            // Display the balance on the page
-
-            address.innerText = `Address: ${accounts[0]}`;
-            balanceElement.innerText = `Balance: ${balance} MATIC`;
             connect_btn.innerText = "Connected"
+
         }
         async function checkMaticAndRedirect1() {
-            const requiredBalance = ethers.utils.parseEther('0.1');
+            // const requiredBalance = ethers.utils.parseEther('0.000001');
             if (balance == undefined) {
-                alert("Connect wallet")
+                alert("Connect wallet First")
             }
-            else if (balance < requiredBalance) {
-                // Redirect the user to the QuickSwap website to get MATIC
-                window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
-            } else {
-                // Redirect the user to page1.html
-                window.location.href = 'page1.html';
-
+            if (balance == 0.0) {
+                let ans = prompt("You don't have enough balance, if you want to buy MATIC press yes")
+                if (ans.toLocaleLowerCase() == "yes") {
+                    window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
+                }
+            }
+            else {
+                let val = prompt("Enter the MATIC")
+                if (ethers.utils.formatEther(val) > 0.0) {
+                    window.location.href = 'page1.html';
+                }
             }
 
         }
@@ -103,57 +97,48 @@
                 window.location.href = 'page2.html';
             }
         } // Get the modal element
-        const modal = document.getElementById("myModal"); // Get the button that opens the modal const
-        btn = document.querySelector(".connect-btn"); // Get the <span> element that closes the modal
-        const span = document.querySelector(".close");
 
-        // Function to open the modal
-        function openModal() {
-            modal.style.display = "block";
-        }
+        var account;
 
-        // Function to close the modal
-        function closeModal() {
-            modal.style.display = "none";
-        }
+        // https://docs.walletconnect.com/quick-start/dapps/web3-provider
+        var provider = new WalletConnectProvider.default({
+            rpc: {
+                1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+                137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+                // ...
 
-        // Function to connect with Metamask
-        async function connectMetamask() {
-            myFunction()
-        }
-
-        // Function to connect with WalletConnect
-        async function connectWalletConnect() {
-            try {
-                // Create a new WalletConnect provider
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-                // Create a new WalletConnect connector
-                const connector = new WalletConnectConnector({
-                    rpc: { 1: 'https://mainnet.infura.io/v3/<your-infura-project-id>' },
-                });
-
-                // Create a new WalletConnect session
-                const session = await connector.connect();
-
-                // Set the provider to the WalletConnect provider
-                provider.setProvider(session);
-
-                console.log("Connected to WalletConnect");
-                closeModal();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        // Event listeners
-        btn.addEventListener("click", openModal);
-        span.addEventListener("click", closeModal);
-        window.addEventListener("click", (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
+            },
+            // bridge: 'https://bridge.walletconnect.org',
         });
+
+        var connectWC = async () => {
+            await provider.enable();
+
+            //  Create Web3 instance
+            const web3 = new Web3(provider);
+            window.w3 = web3
+
+            var accounts = await web3.eth.getAccounts(); // get all connected accounts
+            account = accounts[0]; // get the primary account
+
+        }
+
+
+        var sign = async (msg) => {
+            if (w3) {
+                return await w3.eth.personal.sign(msg, account)
+            } else {
+                return false
+            }
+        }
+
+        var disconnect = async () => {
+            // Close provider session
+            await provider.disconnect()
+        }
+
+
+
 
     </script>
 </body>
