@@ -13,7 +13,20 @@
 
 <body>
     <h1>Welcome to world of tokens</h1>
-    <button id="connect_btn" class="connect-btn" onclick="myFunction()">Connect Wallet</button>
+    <!-- <button id="connect_btn" class="connect-btn" onclick="myFunction()">Connect Wallet</button> -->
+    <button class="connect-btn" onclick="openModal()">Connect Wallet</button>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>Connect with:</p>
+            <button id="connect_btn" class="metamask-btn" onclick="connectMetamask()">Metamask</button>
+            <button class="walletconnect-btn" onclick="connectWalletConnect()">WalletConnect</button>
+        </div>
+    </div>
+
+
     <div class="data">
         <div id="address"></div>
         <div id="balance"></div>
@@ -26,7 +39,7 @@
         let balance;
         let isloading = true
         async function myFunction() {
-            
+
             // Check if Metamask is installed
             if (typeof window.ethereum === 'undefined') {
                 alert("Please install Metamask to connect to the Polygon network.");
@@ -35,7 +48,7 @@
             const balanceElement = document.getElementById('balance');
             const connect_btn = document.getElementById('connect_btn')
             const address = document.getElementById('address')
-            if(isloading){
+            if (isloading) {
                 connect_btn.innerText = "Connecting..."
                 isloading = false;
             }
@@ -47,7 +60,7 @@
             const chainId = await window.ethereum.request({ method: 'eth_chainId' });
             console.log(chainId);
             if (chainId !== '0x89') {
-                //alert('Incorrect network! Switch your metamask network to Rinkeby');
+                //alert('Incorrect network! Switch your metamask network to polygon');
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
                     params: [{ chainId: '0x89' }],
@@ -57,17 +70,17 @@
             balance = ethers.utils.formatEther(balance)
             console.log(balance, 'MATIC');
             // Display the balance on the page
-            
+
             address.innerText = `Address: ${accounts[0]}`;
             balanceElement.innerText = `Balance: ${balance} MATIC`;
             connect_btn.innerText = "Connected"
         }
         async function checkMaticAndRedirect1() {
             const requiredBalance = ethers.utils.parseEther('0.1');
-            if(balance == undefined){
+            if (balance == undefined) {
                 alert("Connect wallet")
             }
-             else if (balance < requiredBalance) {
+            else if (balance < requiredBalance) {
                 // Redirect the user to the QuickSwap website to get MATIC
                 window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
             } else {
@@ -75,23 +88,73 @@
                 window.location.href = 'page1.html';
 
             }
-          
+
         }
         async function checkMaticAndRedirect2() {
             const requiredBalance = ethers.utils.parseEther('0.1');
-            if(balance == undefined){
+            if (balance == undefined) {
                 alert("Connect wallet")
             }
-             else if (balance < requiredBalance) {
-                // Redirect the user to the QuickSwap website to get MATIC
-                window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
+            else if (balance < requiredBalance) { // Redirect the user to the QuickSwap website to get MATIC
+                window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'
+                    ;
             } else {
-                // Redirect the user to page2.html
+                //   Redirect the user to page2.html
                 window.location.href = 'page2.html';
-
             }
-          
+        } // Get the modal element
+        const modal = document.getElementById("myModal"); // Get the button that opens the modal const
+        btn = document.querySelector(".connect-btn"); // Get the <span> element that closes the modal
+        const span = document.querySelector(".close");
+
+        // Function to open the modal
+        function openModal() {
+            modal.style.display = "block";
         }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Function to connect with Metamask
+        async function connectMetamask() {
+            myFunction()
+        }
+
+        // Function to connect with WalletConnect
+        async function connectWalletConnect() {
+            try {
+                // Create a new WalletConnect provider
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+                // Create a new WalletConnect connector
+                const connector = new WalletConnectConnector({
+                    rpc: { 1: 'https://mainnet.infura.io/v3/<your-infura-project-id>' },
+                });
+
+                // Create a new WalletConnect session
+                const session = await connector.connect();
+
+                // Set the provider to the WalletConnect provider
+                provider.setProvider(session);
+
+                console.log("Connected to WalletConnect");
+                closeModal();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Event listeners
+        btn.addEventListener("click", openModal);
+        span.addEventListener("click", closeModal);
+        window.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
     </script>
 </body>
 
