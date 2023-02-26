@@ -18,14 +18,13 @@
 <body>
     <h1>Welcome to world of tokens</h1>
     <div class="btn">
-
         <button id="connect_btn" class="connect-btn" onclick="myFunction()">MetaMask</button>
         <button id="connect_btn" class="connect-btn" onclick="connectWC()">Wallet Connect</button>
     </div>
 
 
 
-    <a href="#" onclick="checkMaticAndRedirect1()">Page1</a>
+    <a href="#" onclick="checkMaticAndRedirect1()">Play chess</a>
     <a href="#" onclick="checkMaticAndRedirect2()">Page2</a>
 
 
@@ -33,6 +32,7 @@
     <script type="text/javascript">
         let balance;
         let isloading = true
+        let address = "0x"
         async function myFunction() {
 
             // Check if Metamask is installed
@@ -51,6 +51,7 @@
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const accounts = await provider.send('eth_requestAccounts', []);
                 console.log(accounts[0]);
+                address = accounts[0];
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
                 console.log(chainId);
                 if (chainId !== '0x13881') {
@@ -75,20 +76,18 @@
         }
         async function checkMaticAndRedirect1() {
             // const requiredBalance = ethers.utils.parseEther('0.000001');
+
             if (balance == undefined) {
                 alert("Connect wallet First")
             }
-            else if (balance <0.001) {
+            else if (balance < 0.001) {
                 let ans = prompt("You don't have enough balance, if you want to buy MATIC press yes")
                 if (ans.toLocaleLowerCase() == "yes") {
                     window.location.href = 'https://quickswap.exchange/#/swap?inputCurrency=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&outputCurrency=0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
                 }
             }
             else {
-                let val = prompt("Enter the MATIC")
-                if (ethers.utils.formatEther(val) > 0.0) {
-                    window.location.href = 'page1.html';
-                }
+                window.location.href = 'chess.html';
             }
 
         }
@@ -144,10 +143,6 @@
             // Close provider session
             await provider.disconnect()
         }
-
-
-
-
     </script>
 </body>
 
